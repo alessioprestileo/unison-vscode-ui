@@ -112,7 +112,7 @@ interface GetDefinitionParams {
 	names: string;
 }
 export interface ApiClient {
-	list: (namespace: string) => Promise<TNamespaceListing>;
+	list: (namespace: string | undefined) => Promise<TNamespaceListing>;
 	getDefinition: (
 		params: GetDefinitionParams
 	) => Promise<TGetDefinitionResponse>;
@@ -121,7 +121,7 @@ export interface ApiClient {
 export function createApiClient(apiRoot: string): ApiClient {
 	return {
 		list: async (namespace) => {
-			const queryParams = `?namespace=${namespace}`;
+			const queryParams = namespace ? `?namespace=${namespace}` : '';
 			const res = await fetch(`${apiRoot}/list${queryParams}`);
 			return unwrapResult(NamespaceListing.decode(await res.json()));
 		},

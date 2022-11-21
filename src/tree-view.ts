@@ -65,7 +65,7 @@ export class CodebaseProvider
 	async getChildren(
 		element?: CodebaseTreeviewChild
 	): Promise<CodebaseTreeviewChild[]> {
-		const namespace = element ? `.${element?.namespaceListingFQN}` : '.';
+		const namespace = element && element.namespaceListingFQN;
 		const listing = await this.apiClient.list(namespace);
 		return listing.namespaceListingChildren
 			.map((child) => mapListingChildToTreeItem(child, listing))
@@ -79,10 +79,13 @@ const mapListingChildToTreeItem = (
 ): CodebaseTreeviewChild | null => {
 	switch (child.tag) {
 		case 'Subnamespace':
+			const prefix = listing.namespaceListingFQN
+				? `${listing.namespaceListingFQN}.`
+				: '';
 			return new CodebaseTreeviewChild(
 				child.contents.namespaceName,
 				child,
-				`${listing.namespaceListingFQN}.${child.contents.namespaceName}`
+				`${prefix}${child.contents.namespaceName}`
 			);
 
 		case 'TermObject':
